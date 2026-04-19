@@ -31,7 +31,7 @@ canvas{
   z-index:0;
 }
 
-/* 🌙 LUNA FINAL (CRÁTERES VISIBLES) */
+/* 🌙 LUNA */
 .moon{
   position:absolute;
   top:8%;
@@ -44,9 +44,7 @@ canvas{
     radial-gradient(circle at 65% 65%, rgba(0,0,0,0.45) 15%, transparent 17%),
     radial-gradient(circle at 40% 75%, rgba(0,0,0,0.4) 13%, transparent 15%),
     radial-gradient(circle at 75% 35%, rgba(0,0,0,0.35) 11%, transparent 13%),
-    radial-gradient(circle at 55% 25%, rgba(0,0,0,0.3) 9%, transparent 11%),
-    radial-gradient(circle at 30% 60%, rgba(0,0,0,0.25) 5%, transparent 7%),
-    radial-gradient(circle at 70% 55%, rgba(0,0,0,0.2) 4%, transparent 6%);
+    radial-gradient(circle at 55% 25%, rgba(0,0,0,0.3) 9%, transparent 11%);
   box-shadow:
     0 0 70px rgba(255,255,255,0.9),
     0 0 140px rgba(255,255,255,0.5),
@@ -57,7 +55,7 @@ canvas{
   transition:opacity 2s, transform 2s;
 }
 
-/* 💎 TARJETA PREMIUM */
+/* 💎 TARJETA */
 .card{
   position:relative;
   z-index:2;
@@ -242,18 +240,16 @@ function draw(){
 }
 draw();
 
-/* MENSAJES */
-const mensajes=[
-"Quería hacerte algo especial 💙",
-"Eres una gran chica",
-"Se nota que te esfuerzas mucho",
-"Tienes algo diferente",
-"Me gusta hablar contigo",
-"Casi termino...",
-"FINAL"
-];
+/* 🎵 MÚSICA */
+const music=document.getElementById("music");
+function toggleMusic(){
+  music.paused?music.play():music.pause();
+}
 
-let index=0;
+/* TEXTO */
+const mensaje=document.getElementById("mensaje");
+const envelope=document.getElementById("envelope");
+const moon=document.getElementById("moon");
 
 function escribir(texto){
   let i=0;
@@ -264,7 +260,23 @@ function escribir(texto){
   },40);
 }
 
+/* MENSAJES */
+const mensajes=[
+"Quería hacerte algo especial 💙",
+"Eres una gran chica",
+"Se nota que te esfuerzas mucho",
+"Tienes algo diferente",
+"Me gusta hablar contigo",
+"FINAL"
+];
+
+let index=0;
+
+/* FONDOS */
 function fondo(){
+  if(index==1) document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
+  if(index==2) document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
+  if(index==3) document.body.style.background="linear-gradient(#1e3c72,#3a6186)";
   if(index==4){
     document.body.style.background="linear-gradient(#3a6186,#000)";
     moon.style.opacity=1;
@@ -275,16 +287,29 @@ function fondo(){
   }
 }
 
+/* ABRIR */
+function abrir(texto){
+  envelope.classList.remove("open");
+  mensaje.style.opacity=0;
+
+  setTimeout(()=>{
+    envelope.classList.add("open");
+    escribir(texto);
+    mensaje.style.opacity=1;
+  },300);
+}
+
+/* CLICK */
 envelope.onclick=()=>{
   index++;
   fondo();
 
   if(index>=mensajes.length-1){
-    escribir("ojalá te haya gustado :) me pareces increíble 💙");
+    abrir("ojalá te haya gustado :) me pareces increíble 💙");
     return;
   }
 
-  escribir(mensajes[index]);
+  abrir(mensajes[index]);
 };
 
 /* 🧸 PELUCHES */
@@ -305,11 +330,6 @@ setInterval(()=>{
   setTimeout(()=>p.remove(),14000);
 },1500);
 
-/* 🎵 */
-function toggleMusic(){
-  music.paused?music.play():music.pause();
-}
-
 /* INICIO */
 window.onload=()=>{
   setTimeout(()=>{
@@ -317,7 +337,7 @@ window.onload=()=>{
 
     setTimeout(()=>{
       document.querySelector(".card").classList.add("latido");
-      escribir(mensajes[0]);
+      abrir(mensajes[0]);
     },1000);
 
   },300);
