@@ -19,33 +19,33 @@ body{
   transition: background 1.5s ease;
 }
 
-/* ESTRELLAS */
+/* ⭐ ESTRELLAS (BONITAS Y SUAVES) */
 .star{
   position:absolute;
-  width:3px;
-  height:3px;
+  width:2px;
+  height:2px;
   background:white;
   border-radius:50%;
-  opacity:0.2;
+  opacity:0.4;
   animation:twinkle 2s infinite alternate;
 }
 
 @keyframes twinkle{
   from{opacity:0.2}
-  to{opacity:1}
+  to{opacity:0.9}
 }
 
-/* LUNA */
+/* 🌙 LUNA */
 .moon{
   position:absolute;
   top:20%;
   right:10%;
-  width:100px;
-  height:100px;
+  width:110px;
+  height:110px;
   background:white;
   border-radius:50%;
   opacity:0;
-  box-shadow:0 0 60px rgba(255,255,255,0.9);
+  box-shadow:0 0 70px rgba(255,255,255,0.9);
   transition:opacity 2s, transform 3s ease;
 }
 
@@ -62,45 +62,46 @@ body{
   text-align:center;
 }
 
-/* SOBRE REAL */
+/* ✉️ SOBRE REAL */
 .envelope{
   position:relative;
   width:100%;
-  height:140px;
-  background:#ffffff20;
-  border-radius:10px;
+  height:160px;
+  background:linear-gradient(135deg,#e0f2ff,#b3e5fc);
+  border-radius:12px;
   overflow:hidden;
   margin-top:15px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+  cursor:pointer;
 }
 
-/* tapa */
 .flap{
   position:absolute;
   width:100%;
   height:100%;
-  background:rgba(255,255,255,0.3);
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  background:linear-gradient(135deg,#90caf9,#64b5f6);
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
   transform-origin: top;
-  transition: transform 0.6s ease;
-  z-index:2;
+  transition: transform 0.7s ease;
+  z-index:3;
 }
 
-/* carta */
 .letter{
   position:absolute;
   bottom:0;
   width:100%;
   height:100%;
-  background:rgba(255,255,255,0.1);
+  background:white;
+  color:#333;
+  border-radius:10px;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
+  padding:15px;
   transform:translateY(100%);
-  transition: transform 0.6s ease;
+  transition: transform 0.7s ease;
 }
 
-/* apertura */
 .envelope.open .flap{
   transform: rotateX(180deg);
 }
@@ -155,7 +156,7 @@ body{
   color:white;
 }
 
-/* PELUCHES */
+/* 🧸 PELUCHES */
 .peluche{
   position:absolute;
   filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
@@ -187,7 +188,6 @@ body{
   </div>
 
   <button class="btn" onclick="toggleMusic()">🎵 Música</button>
-  <button class="btn secondary" onclick="siguienteMensaje()">Siguiente</button>
 </div>
 
 <audio id="music" src="all-i-want.mp3"></audio>
@@ -218,6 +218,10 @@ function abrirCarta(texto){
   setTimeout(()=>{
     env.classList.add("open");
 
+    if(navigator.vibrate){
+      navigator.vibrate(40);
+    }
+
     setTimeout(()=>{
       escribirTexto(texto);
       msg.style.opacity = 1;
@@ -228,9 +232,9 @@ function abrirCarta(texto){
         msg.classList.add("brillo");
       }
 
-    },300);
+    },400);
 
-  },200);
+  },300);
 }
 
 /* TEXTO */
@@ -255,7 +259,6 @@ function siguienteMensaje(){
   if(writing)return;
 
   index++;
-
   cambiarFondo();
 
   if(index>=mensajes.length-1){
@@ -267,9 +270,11 @@ function siguienteMensaje(){
   abrirCarta(mensajes[index]);
 }
 
-/* FONDOS SUAVES */
-function cambiarFondo(){
+/* TOCAR CARTA */
+document.getElementById("envelope").addEventListener("click", siguienteMensaje);
 
+/* FONDO */
+function cambiarFondo(){
   if(index==1)
     document.body.style.background="linear-gradient(180deg,#6ec6ff,#4facfe)";
 
@@ -281,17 +286,17 @@ function cambiarFondo(){
 
   if(index==4){
     document.body.style.background="linear-gradient(180deg,#3a6186,#89216b)";
-    document.getElementById("moon").style.opacity=0.7;
-    document.getElementById("moon").style.transform="translateY(-20px)";
+    moon.style.opacity=0.7;
+    moon.style.transform="translateY(-20px)";
   }
 
   if(index>=5){
     document.body.style.background="linear-gradient(180deg,#0f2027,#000000)";
-    document.getElementById("moon").style.opacity=1;
+    moon.style.opacity=1;
   }
 
   document.querySelectorAll('.star').forEach(s=>{
-    s.style.opacity = 0.2 + (index * 0.15);
+    s.style.opacity = 0.3 + (index * 0.15);
   });
 }
 
@@ -306,8 +311,8 @@ function toggleMusic(){
   }
 }
 
-/* ESTRELLAS */
-for(let i=0;i<150;i++){
+/* ⭐ ESTRELLAS (BONITAS Y LIGERAS) */
+for(let i=0;i<130;i++){
   const star=document.createElement('div');
   star.className='star';
   star.style.top=Math.random()*100+'%';
@@ -315,7 +320,7 @@ for(let i=0;i<150;i++){
   document.body.appendChild(star);
 }
 
-/* PELUCHES */
+/* 🧸 PELUCHES */
 const peluches=[
   'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
   'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
