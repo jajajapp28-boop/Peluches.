@@ -52,7 +52,7 @@ canvas{
   filter:brightness(0.95);
   opacity:0;
   transform:scale(0.7);
-  transition:opacity 2s, transform 2s;
+  transition:2s;
 }
 
 /* 💎 TARJETA */
@@ -90,12 +90,14 @@ body.loaded .card{
 /* 💓 LATIDO */
 @keyframes latido{
   0%{transform:scale(1)}
-  30%{transform:scale(1.02)}
+  30%{transform:scale(1.03)}
   50%{transform:scale(1)}
-  70%{transform:scale(1.02)}
+  70%{transform:scale(1.03)}
   100%{transform:scale(1)}
 }
-.latido{animation:latido 1.8s infinite}
+.latido{
+  animation:latido 1.2s infinite;
+}
 
 /* ✉️ SOBRE */
 .envelope{
@@ -155,6 +157,42 @@ body.loaded .card{
   cursor:pointer;
 }
 
+/* 🌠 ESTRELLA FUGAZ */
+.shooting-star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  box-shadow:0 0 10px white, 0 0 20px white;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:1;
+}
+
+.shooting-star::after{
+  content:'';
+  position:absolute;
+  width:120px;
+  height:2px;
+  background:linear-gradient(to right, white, transparent);
+  transform:rotate(45deg);
+  transform-origin:left;
+}
+
+/* ✨ FLASH SUAVE */
+.flash{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+  z-index:1;
+}
+
 /* 🧸 PELUCHES */
 .peluche{
   position:absolute;
@@ -171,6 +209,7 @@ body.loaded .card{
 <body>
 
 <canvas id="space"></canvas>
+<div class="flash" id="flash"></div>
 <div class="moon" id="moon"></div>
 
 <div class="card">
@@ -193,6 +232,72 @@ body.loaded .card{
 
 <script>
 
+/* 🎵 MÚSICA + LATIDO SINCRONIZADO */
+const music=document.getElementById("music");
+const card=document.querySelector(".card");
+let musicIniciada=false;
+
+function toggleMusic(){
+  if(!musicIniciada){
+    music.play().then(()=>{
+      musicIniciada=true;
+      card.classList.add("latido");
+    });
+  }else{
+    if(music.paused){
+      music.play();
+      card.classList.add("latido");
+    }else{
+      music.pause();
+      card.classList.remove("latido");
+    }
+  }
+}
+
+/* desbloqueo móvil */
+document.body.addEventListener("click",()=>{
+  if(!musicIniciada){
+    music.play().then(()=>{
+      music.pause();
+      music.currentTime=0;
+      musicIniciada=true;
+    }).catch(()=>{});
+  }
+},{once:true});
+
+/* 🌠 ESTRELLA FUGAZ + FLASH */
+function iluminar(){
+  const flash=document.getElementById("flash");
+  flash.style.opacity="1";
+  setTimeout(()=>flash.style.opacity="0",200);
+}
+
+function crearEstrellaFugaz(){
+  const star=document.createElement("div");
+  star.className="shooting-star";
+
+  star.style.left=Math.random()*window.innerWidth+"px";
+  star.style.top=Math.random()*window.innerHeight*0.3+"px";
+
+  document.body.appendChild(star);
+
+  iluminar();
+
+  const dist=400+Math.random()*300;
+  const dur=800+Math.random()*600;
+
+  star.animate([
+    {transform:'translate(0,0)',opacity:1},
+    {transform:`translate(${dist}px,${dist}px)`,opacity:0}
+  ],{duration:dur,easing:'ease-out'});
+
+  setTimeout(()=>star.remove(),dur);
+}
+
+setInterval(()=>{
+  if(Math.random()>0.6) crearEstrellaFugaz();
+},2000);
+
 /* 🌌 ESTRELLAS */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
@@ -201,26 +306,15 @@ canvas.height=innerHeight;
 
 let stars=[];
 for(let i=0;i<220;i++){
-  stars.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    r:Math.random()*2,
-    speed:Math.random()*0.3,
-    alpha:Math.random()
-  });
+  stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2,speed:Math.random()*0.3,alpha:Math.random()});
 }
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
   stars.forEach(s=>{
     s.alpha+=(Math.random()-0.5)*0.15;
     if(s.alpha<0.3)s.alpha=0.3;
     if(s.alpha>1)s.alpha=1;
-
-    s.r+=(Math.random()-0.5)*0.2;
-    if(s.r<0.5)s.r=0.5;
-    if(s.r>3)s.r=3;
 
     ctx.beginPath();
     ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
@@ -230,37 +324,17 @@ function draw(){
     ctx.fill();
 
     s.y-=s.speed;
-    if(s.y<0){
-      s.y=canvas.height;
-      s.x=Math.random()*canvas.width;
-    }
+    if(s.y<0){s.y=canvas.height;s.x=Math.random()*canvas.width;}
   });
-
   requestAnimationFrame(draw);
 }
 draw();
 
-/* 🎵 MÚSICA */
-const music=document.getElementById("music");
-function toggleMusic(){
-  music.paused?music.play():music.pause();
-}
-
-/* TEXTO */
+/* TEXTO + MENSAJES */
 const mensaje=document.getElementById("mensaje");
 const envelope=document.getElementById("envelope");
 const moon=document.getElementById("moon");
 
-function escribir(texto){
-  let i=0;
-  mensaje.innerHTML="";
-  const inter=setInterval(()=>{
-    mensaje.innerHTML+=texto.charAt(i);
-    if(++i>=texto.length)clearInterval(inter);
-  },40);
-}
-
-/* MENSAJES */
 const mensajes=[
 "Quería hacerte algo especial 💙",
 "Eres una gran chica",
@@ -272,7 +346,15 @@ const mensajes=[
 
 let index=0;
 
-/* FONDOS */
+function escribir(texto){
+  let i=0;
+  mensaje.innerHTML="";
+  const inter=setInterval(()=>{
+    mensaje.innerHTML+=texto.charAt(i);
+    if(++i>=texto.length)clearInterval(inter);
+  },40);
+}
+
 function fondo(){
   if(index==1) document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
   if(index==2) document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
@@ -287,11 +369,9 @@ function fondo(){
   }
 }
 
-/* ABRIR */
 function abrir(texto){
   envelope.classList.remove("open");
   mensaje.style.opacity=0;
-
   setTimeout(()=>{
     envelope.classList.add("open");
     escribir(texto);
@@ -299,7 +379,6 @@ function abrir(texto){
   },300);
 }
 
-/* CLICK */
 envelope.onclick=()=>{
   index++;
   fondo();
@@ -332,15 +411,7 @@ setInterval(()=>{
 
 /* INICIO */
 window.onload=()=>{
-  setTimeout(()=>{
-    document.body.classList.add("loaded");
-
-    setTimeout(()=>{
-      document.querySelector(".card").classList.add("latido");
-      abrir(mensajes[0]);
-    },1000);
-
-  },300);
+  setTimeout(()=>document.body.classList.add("loaded"),300);
 };
 
 </script>
