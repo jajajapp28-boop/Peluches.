@@ -1,172 +1,184 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Para ti 💙</title>
+<meta charset="UTF-8">
+<title>Para ti 💙</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
 
-  <style>
-    * { box-sizing: border-box; }
+body{
+  height:100vh;
+  overflow:hidden;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(180deg,#3a7bd5,#00d2ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    body {
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: radial-gradient(circle at top, #4facfe, #1e3c72 60%, #0a1f44);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+/* ESTRELLAS SUAVES */
+.stars{
+  position:absolute;
+  width:100%;
+  height:100%;
+}
+
+.star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  opacity:0.6;
+  animation:twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle{
+  from{opacity:0.2}
+  to{opacity:1}
+}
+
+.card{
+  position:relative;
+  z-index:2;
+  backdrop-filter:blur(15px);
+  background:rgba(255,255,255,0.15);
+  border-radius:20px;
+  padding:30px;
+  width:90%;
+  max-width:420px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  text-align:center;
+}
+
+h1{
+  font-weight:600;
+}
+
+#mensaje{
+  margin-top:15px;
+  font-size:1.15em;
+  min-height:60px;
+}
+
+.btn{
+  margin-top:15px;
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  background:white;
+  color:#0077b6;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.08);
+}
+
+.btn.secondary{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.4);
+  color:white;
+}
+
+/* PELUCHES GRANDES */
+.peluche{
+  position:absolute;
+  width:90px;
+  animation:float 10s linear infinite;
+}
+
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0.8) rotate(0deg);opacity:0}
+  10%{opacity:1}
+  50%{transform:translateY(40vh) scale(1)}
+  100%{transform:translateY(-10vh) scale(1.1) rotate(10deg);opacity:0}
+}
+
+</style></head><body><div class="stars" id="stars"></div><div class="card">
+  <h1>Hola :)</h1>
+  <p id="mensaje"></p><button class="btn" id="musicBtn" onclick="toggleMusic()">🎵 Reproducir</button> <button class="btn secondary" onclick="siguienteMensaje()">Siguiente</button>
+
+</div><audio id="music" src="all-i-want.mp3"></audio>
+
+<script>
+
+/* MENSAJES MEJORADOS */
+const mensajes = [
+  "Quería hacerte algo especial 💙",
+  "Porque eres una persona que vale mucho la pena",
+  "Tienes una forma de ser que se nota diferente",
+  "Y la verdad... me gusta seguir conociéndote :)"
+];
+
+let index=0;
+let writing=false;
+
+function escribirTexto(texto){
+  const el=document.getElementById('mensaje');
+  el.innerHTML="";
+  let i=0;
+  writing=true;
+
+  const intervalo=setInterval(()=>{
+    el.innerHTML+=texto[i];
+    i++;
+    if(i>=texto.length){
+      clearInterval(intervalo);
+      writing=false;
     }
+  },30);
+}
 
-    .card {
-      backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-      animation: fadeIn 1.5s ease;
-    }
+function siguienteMensaje(){
+  if(writing)return;
+  index=(index+1)%mensajes.length;
+  escribirTexto(mensajes[index]);
+}
 
-    h1 {
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
+function toggleMusic(){
+  const audio=document.getElementById('music');
+  const btn=document.getElementById('musicBtn');
 
-    #mensaje {
-      font-size: 1.1em;
-      opacity: 0.9;
-      min-height: 50px;
-    }
+  if(audio.paused){
+    audio.volume=0.25;
+    audio.play();
+    btn.textContent="⏸️ Pausar";
+  }else{
+    audio.pause();
+    btn.textContent="🎵 Reproducir";
+  }
+}
 
-    .btn {
-      margin-top: 15px;
-      padding: 12px 20px;
-      font-size: 15px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #6ec6ff, #b3e5fc);
-      color: #003366;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+/* ESTRELLAS */
+for(let i=0;i<70;i++){
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.top=Math.random()*100+'%';
+  star.style.left=Math.random()*100+'%';
+  document.getElementById('stars').appendChild(star);
+}
 
-    .btn:hover {
-      transform: scale(1.08);
-    }
+/* PELUCHES MÁS GRANDES Y BONITOS */
+const peluches=[
+  'https://cdn-icons-png.flaticon.com/512/1998/1998610.png',
+  'https://cdn-icons-png.flaticon.com/512/3468/3468371.png',
+  'https://cdn-icons-png.flaticon.com/512/616/616408.png'
+];
 
-    .btn.secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.3);
-      color: white;
-    }
+function crearPeluche(){
+  const p=document.createElement('img');
+  p.src=peluches[Math.floor(Math.random()*peluches.length)];
+  p.className='peluche';
+  p.style.left=Math.random()*100+'vw';
+  p.style.animationDuration=(8+Math.random()*6)+'s';
+  document.body.appendChild(p);
 
-    .peluche {
-      position: absolute;
-      width: 50px;
-      pointer-events: none;
-      animation: float linear infinite;
-    }
+  setTimeout(()=>p.remove(),14000);
+}
 
-    @keyframes float {
-      0% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(-10vh) scale(1.1) rotate(360deg); opacity: 0; }
-    }
+setInterval(crearPeluche,1500);
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</head>
+escribirTexto(mensajes[0]);
 
-<body>
-
-  <div class="card">
-    <h1>Hola :)</h1>
-    <p id="mensaje"></p>
-
-    <button class="btn" id="musicBtn" onclick="toggleMusic()">🎵 Reproducir</button>
-    <button class="btn secondary" onclick="siguienteMensaje()">Siguiente</button>
-  </div>
-
-  <!-- 🔥 AQUÍ VA TU CANCIÓN -->
-  <audio id="music" src="all-i-want.mp3"></audio>
-
-  <script>
-    const mensajes = [
-      "Quería hacer algo diferente para ti 💙",
-      "Me gusta platicar contigo",
-      "Se siente buena vibra cuando hablamos",
-      "Así que hice esto, algo sencillo pero con intención :)"
-    ];
-
-    let index = 0;
-    let writing = false;
-
-    function escribirTexto(texto) {
-      const el = document.getElementById('mensaje');
-      el.innerHTML = "";
-      let i = 0;
-      writing = true;
-
-      const intervalo = setInterval(() => {
-        el.innerHTML += texto[i];
-        i++;
-        if (i >= texto.length) {
-          clearInterval(intervalo);
-          writing = false;
-        }
-      }, 35);
-    }
-
-    function siguienteMensaje() {
-      if (writing) return;
-      index = (index + 1) % mensajes.length;
-      escribirTexto(mensajes[index]);
-    }
-
-    // 🎵 CONTROL DE MÚSICA PRO
-    function toggleMusic() {
-      const audio = document.getElementById('music');
-      const btn = document.getElementById('musicBtn');
-
-      if (audio.paused) {
-        audio.play();
-        btn.textContent = "⏸️ Pausar";
-      } else {
-        audio.pause();
-        btn.textContent = "🎵 Reproducir";
-      }
-    }
-
-    // Peluches
-    const pelucheImages = [
-      'https://cdn-icons-png.flaticon.com/512/616/616408.png',
-      'https://cdn-icons-png.flaticon.com/512/616/616430.png',
-      'https://cdn-icons-png.flaticon.com/512/616/616554.png'
-    ];
-
-    function crearPeluche() {
-      const peluche = document.createElement('img');
-      peluche.src = pelucheImages[Math.floor(Math.random() * pelucheImages.length)];
-      peluche.className = 'peluche';
-      peluche.style.left = Math.random() * 100 + 'vw';
-      peluche.style.animationDuration = (6 + Math.random() * 8) + 's';
-      document.body.appendChild(peluche);
-
-      setTimeout(() => peluche.remove(), 14000);
-    }
-
-    setInterval(crearPeluche, 900);
-
-    // Inicio
-    escribirTexto(mensajes[0]);
-  </script>
-
-</body>
+</script></body>
 </html>
