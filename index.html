@@ -16,20 +16,14 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  transition: background 1.5s ease;
 }
 
-/* ⭐ ESTRELLAS PRO */
-.star{
-  position:absolute;
-  background:white;
-  border-radius:50%;
-  animation:twinkle 3s infinite alternate;
-}
-
-@keyframes twinkle{
-  from{opacity:0.2}
-  to{opacity:1}
+/* 🌌 CANVAS */
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:0;
 }
 
 /* 🌙 LUNA */
@@ -42,8 +36,20 @@ body{
   background:white;
   border-radius:50%;
   opacity:0;
-  box-shadow:0 0 70px rgba(255,255,255,0.9);
-  transition:opacity 2s, transform 3s ease;
+  box-shadow:
+    0 0 80px rgba(255,255,255,1),
+    0 0 120px rgba(255,255,255,0.6);
+  transition:opacity 2s, transform 1s;
+}
+
+/* 🎬 TRANSICIÓN CINEMÁTICA */
+.fade{
+  animation:fadeZoom 0.6s ease;
+}
+
+@keyframes fadeZoom{
+  from{opacity:0; transform:scale(0.95);}
+  to{opacity:1; transform:scale(1);}
 }
 
 /* TARJETA */
@@ -57,71 +63,75 @@ body{
   width:90%;
   max-width:420px;
   text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,0.5);
 }
 
-/* ✉️ SOBRE 3D */
+/* ✉️ SOBRE */
 .envelope{
   position:relative;
   width:100%;
   height:160px;
   background:linear-gradient(135deg,#e0f2ff,#b3e5fc);
   border-radius:12px;
-  overflow:hidden;
   margin-top:15px;
-  box-shadow:0 12px 25px rgba(0,0,0,0.3);
   perspective:1000px;
   cursor:pointer;
+  transition:transform 0.4s;
 }
 
-/* tapa */
+.envelope.open{
+  transform: scale(1.05);
+}
+
+/* FLAP */
 .flap{
   position:absolute;
   width:100%;
   height:100%;
-  background:linear-gradient(135deg,#90caf9,#64b5f6);
-  clip-path: polygon(0 0, 100% 0, 50% 60%);
+  background:linear-gradient(135deg,#90caf9,#42a5f5);
+  clip-path: polygon(0 0, 100% 0, 50% 65%);
   transform-origin: top;
-  transform: rotateX(0deg);
-  transition: transform 0.8s ease;
+  transition: transform 0.9s cubic-bezier(.4,2,.6,1);
   z-index:3;
-  box-shadow:0 10px 20px rgba(0,0,0,0.4);
+  box-shadow:0 15px 25px rgba(0,0,0,0.5);
 }
 
 .envelope.open .flap{
   transform: rotateX(120deg);
 }
 
-/* carta */
+/* 📜 CARTA POP-OUT */
 .letter{
   position:absolute;
   bottom:0;
   width:100%;
   height:100%;
-  background:linear-gradient(180deg,#ffffff,#f5f5f5);
+  background:
+    linear-gradient(180deg,#ffffff,#f1f1f1),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 24px);
   color:#333;
   border-radius:10px;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:15px;
-  transform:translateY(100%);
+  transform:translateY(100%) scale(0.9);
   transition: transform 0.7s ease;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+  box-shadow:0 10px 20px rgba(0,0,0,0.3);
 }
 
 .envelope.open .letter{
-  transform: translateY(0);
+  transform: translateY(-20px) scale(1.05);
 }
 
 /* TEXTO */
 #mensaje{
   font-size:1.2em;
-  text-align:center;
   opacity:0;
-  transition:opacity 0.5s ease;
+  transition:0.5s;
 }
 
-/* BOTONES */
+/* BOTÓN */
 .btn{
   margin-top:15px;
   padding:12px 18px;
@@ -132,18 +142,48 @@ body{
   cursor:pointer;
 }
 
+/* ✨ PARTÍCULAS */
+.particle{
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  pointer-events:none;
+  animation:explode 1s forwards;
+}
+
+@keyframes explode{
+  to{
+    transform:translate(var(--x), var(--y)) scale(2);
+    opacity:0;
+  }
+}
+
+/* ✨ CURSOR GLOW */
+.cursor-glow{
+  position:fixed;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle, white, transparent);
+  animation:fadeOut 0.6s forwards;
+}
+
+@keyframes fadeOut{
+  to{transform:scale(3); opacity:0;}
+}
+
 /* 🧸 PELUCHES */
 .peluche{
   position:absolute;
-  filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
-  animation:float ease-in-out infinite;
+  animation:float linear infinite;
 }
 
 @keyframes float{
-  0%{transform:translateY(100vh) scale(0.8);opacity:0}
+  0%{transform:translateY(100vh);opacity:0}
   10%{opacity:1}
-  50%{transform:translateY(40vh) scale(1)}
-  100%{transform:translateY(-10vh) scale(1.1);opacity:0}
+  100%{transform:translateY(-10vh);opacity:0}
 }
 
 </style>
@@ -151,9 +191,10 @@ body{
 
 <body>
 
+<canvas id="space"></canvas>
 <div class="moon" id="moon"></div>
 
-<div class="card">
+<div class="card" id="card">
   <h1>Hola Aslhisiita :)</h1>
 
   <div class="envelope" id="envelope">
@@ -171,158 +212,159 @@ body{
 
 <script>
 
-const mensajes = [
-  "Quería hacerte algo especial 💙",
-  "Eres una gran chica",
-  "Se nota que te esfuerzas mucho",
-  "Tienes algo que te hace diferente",
-  "Y me gusta seguir conociéndote :)",
-  "FINAL"
+/* 🌌 GALAXIA */
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let stars = Array.from({length:120},()=>({
+  x:Math.random()*canvas.width,
+  y:Math.random()*canvas.height,
+  r:Math.random()*1.5,
+  s:Math.random()*0.3
+}));
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle="white";
+    ctx.fill();
+    s.y-=s.s;
+    if(s.y<0){s.y=canvas.height; s.x=Math.random()*canvas.width;}
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ✍️ TEXTO */
+function escribir(t){
+  let i=0;
+  const el=document.getElementById("mensaje");
+  el.innerHTML="";
+  const int=setInterval(()=>{
+    el.innerHTML+=t[i];
+    i++;
+    if(i>=t.length) clearInterval(int);
+  },35);
+}
+
+/* ✨ PARTÍCULAS */
+function explosion(x,y){
+  for(let i=0;i<12;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=x+"px";
+    p.style.top=y+"px";
+    const ang=Math.random()*2*Math.PI;
+    const dist=Math.random()*120;
+    p.style.setProperty("--x",Math.cos(ang)*dist+"px");
+    p.style.setProperty("--y",Math.sin(ang)*dist+"px");
+    p.style.background="radial-gradient(circle,white,transparent)";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1000);
+  }
+}
+
+/* ✉️ CARTA */
+const mensajes=[
+"Quería hacerte algo especial 💙",
+"Eres una gran chica",
+"Se nota que te esfuerzas mucho",
+"Tienes algo que te hace diferente",
+"Y me gusta seguir conociéndote :)",
+"FINAL"
 ];
 
-let index = 0;
-let writing = false;
+let index=0;
 
-/* CARTA */
-function abrirCarta(texto){
-  const env = document.getElementById("envelope");
-  const msg = document.getElementById("mensaje");
+function abrirCarta(t){
+  const env=envelope;
+  const msg=mensaje;
+  const card=document.getElementById("card");
+
+  card.classList.remove("fade");
 
   env.classList.remove("open");
-  msg.style.opacity = 0;
+  msg.style.opacity=0;
 
   setTimeout(()=>{
     env.classList.add("open");
 
-    // sonido papel
-    const sound = document.getElementById("paperSound");
-    sound.currentTime = 0;
-    sound.play();
+    document.getElementById("paperSound").play();
+    if(navigator.vibrate) navigator.vibrate(40);
 
-    // vibración
-    if(navigator.vibrate){
-      navigator.vibrate(40);
-    }
+    const r=env.getBoundingClientRect();
+    explosion(r.left+r.width/2, r.top);
 
     setTimeout(()=>{
-      escribirTexto(texto);
-      msg.style.opacity = 1;
+      card.classList.add("fade");
+      escribir(t);
+      msg.style.opacity=1;
     },400);
 
   },300);
 }
 
-/* TEXTO */
-function escribirTexto(texto){
-  const el=document.getElementById('mensaje');
-  el.innerHTML="";
-  let i=0;
-  writing=true;
-
-  const intervalo=setInterval(()=>{
-    el.innerHTML+=texto[i];
-    i++;
-    if(i>=texto.length){
-      clearInterval(intervalo);
-      writing=false;
-    }
-  },30);
-}
-
-/* SIGUIENTE */
-function siguienteMensaje(){
-  if(writing)return;
-
+/* CLICK */
+envelope.onclick=()=>{
   index++;
-  cambiarFondo();
-
   if(index>=mensajes.length-1){
     abrirCarta("ojalá te haya gustado este pequeño detalle :) me pareces increíble 💙");
-    clearInterval(pelucheInterval);
     return;
   }
-
   abrirCarta(mensajes[index]);
-}
+};
 
-/* CLICK EN CARTA */
-document.getElementById("envelope").addEventListener("click", siguienteMensaje);
-
-/* FONDOS */
-function cambiarFondo(){
-
-  if(index==1)
-    document.body.style.background="linear-gradient(180deg,#6ec6ff,#4facfe)";
-
-  if(index==2)
-    document.body.style.background="linear-gradient(180deg,#4facfe,#1e3c72)";
-
-  if(index==3)
-    document.body.style.background="linear-gradient(180deg,#1e3c72,#3a6186)";
-
-  if(index==4){
-    document.body.style.background="linear-gradient(180deg,#3a6186,#89216b)";
-    moon.style.opacity=0.7;
-  }
-
-  if(index>=5){
-    document.body.style.background="linear-gradient(180deg,#0f2027,#000000)";
-    moon.style.opacity=1;
-  }
-}
-
-/* MUSICA */
+/* 🎵 */
 function toggleMusic(){
-  const audio=document.getElementById('music');
-  if(audio.paused){
-    audio.volume=0.25;
-    audio.play();
-  }else{
-    audio.pause();
-  }
+  const a=music;
+  a.paused?a.play():a.pause();
 }
 
-/* ⭐ ESTRELLAS */
-for(let i=0;i<110;i++){
-  const star=document.createElement('div');
-  star.className='star';
-
-  const size = Math.random()*2 + 1;
-
-  star.style.width=size+'px';
-  star.style.height=size+'px';
-  star.style.top=Math.random()*100+'%';
-  star.style.left=Math.random()*100+'%';
-  star.style.opacity=Math.random();
-
-  document.body.appendChild(star);
+/* ✨ CURSOR */
+let last=0;
+function glow(x,y){
+  const now=Date.now();
+  if(now-last<30)return;
+  last=now;
+  const g=document.createElement("div");
+  g.className="cursor-glow";
+  g.style.left=x+"px";
+  g.style.top=y+"px";
+  document.body.appendChild(g);
+  setTimeout(()=>g.remove(),600);
 }
 
-/* 🧸 PELUCHES */
+document.addEventListener("mousemove",e=>glow(e.clientX,e.clientY));
+document.addEventListener("touchmove",e=>{
+  const t=e.touches[0];
+  glow(t.clientX,t.clientY);
+});
+
+/* 🧸 */
 const peluches=[
-  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
-  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
-  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG47.png'
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png'
 ];
 
-function crearPeluche(){
-  const p=document.createElement('img');
+setInterval(()=>{
+  const p=document.createElement("img");
   p.src=peluches[Math.floor(Math.random()*peluches.length)];
-  p.className='peluche';
-  p.style.left=Math.random()*100+'vw';
-  p.style.width=(120+Math.random()*80)+'px';
-  p.style.animationDuration=(10+Math.random()*6)+'s';
-
+  p.className="peluche";
+  p.style.left=Math.random()*100+"vw";
+  p.style.width=(120+Math.random()*80)+"px";
+  p.style.animationDuration=(10+Math.random()*5)+"s";
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),14000);
-}
+},2500);
 
-const pelucheInterval = setInterval(crearPeluche,2500);
-
-/* INICIO */
+/* START */
 abrirCarta(mensajes[0]);
 
 </script>
-
 </body>
 </html>
