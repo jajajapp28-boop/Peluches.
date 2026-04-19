@@ -8,55 +8,51 @@ body{
   height:100vh;
   overflow:hidden;
   font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(180deg,#3a7bd5,#00d2ff);
+  background:linear-gradient(180deg,#4facfe,#1e3c72);
   color:white;
   display:flex;
   align-items:center;
   justify-content:center;
-}
-
-/* ESTRELLAS SUAVES */
-.stars{
-  position:absolute;
-  width:100%;
-  height:100%;
+  transition: background 1s ease;
 }
 
 .star{
   position:absolute;
-  width:2px;
-  height:2px;
+  width:3px;
+  height:3px;
   background:white;
-  opacity:0.6;
+  box-shadow:0 0 8px white;
   animation:twinkle 2s infinite alternate;
 }
 
 @keyframes twinkle{
-  from{opacity:0.2}
+  from{opacity:0.3}
   to{opacity:1}
 }
 
 .card{
   position:relative;
   z-index:2;
-  backdrop-filter:blur(15px);
+  backdrop-filter:blur(18px);
   background:rgba(255,255,255,0.15);
   border-radius:20px;
   padding:30px;
   width:90%;
   max-width:420px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
   text-align:center;
+  animation:fadeIn 1.5s ease;
 }
 
-h1{
-  font-weight:600;
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(0.95)}
+  to{opacity:1;transform:scale(1)}
 }
 
 #mensaje{
   margin-top:15px;
-  font-size:1.15em;
-  min-height:60px;
+  font-size:1.2em;
+  min-height:80px;
 }
 
 .btn{
@@ -70,9 +66,7 @@ h1{
   transition:0.3s;
 }
 
-.btn:hover{
-  transform:scale(1.08);
-}
+.btn:hover{ transform:scale(1.08); }
 
 .btn.secondary{
   background:transparent;
@@ -80,34 +74,35 @@ h1{
   color:white;
 }
 
-/* PELUCHES GRANDES */
 .peluche{
   position:absolute;
-  width:90px;
-  animation:float 10s linear infinite;
+  width:150px;
+  filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+  animation:float 12s ease-in-out infinite;
 }
 
 @keyframes float{
-  0%{transform:translateY(100vh) scale(0.8) rotate(0deg);opacity:0}
+  0%{transform:translateY(100vh) scale(0.8);opacity:0}
   10%{opacity:1}
   50%{transform:translateY(40vh) scale(1)}
-  100%{transform:translateY(-10vh) scale(1.1) rotate(10deg);opacity:0}
+  100%{transform:translateY(-10vh) scale(1.1);opacity:0}
 }
 
-</style></head><body><div class="stars" id="stars"></div><div class="card">
-  <h1>Hola :)</h1>
+</style></head><body><div class="card">
+  <h1>Hola Aslhisiita :)</h1>
   <p id="mensaje"></p><button class="btn" id="musicBtn" onclick="toggleMusic()">🎵 Reproducir</button> <button class="btn secondary" onclick="siguienteMensaje()">Siguiente</button>
 
 </div><audio id="music" src="all-i-want.mp3"></audio>
 
 <script>
 
-/* MENSAJES MEJORADOS */
 const mensajes = [
   "Quería hacerte algo especial 💙",
-  "Porque eres una persona que vale mucho la pena",
-  "Tienes una forma de ser que se nota diferente",
-  "Y la verdad... me gusta seguir conociéndote :)"
+  "Eres una gran chica",
+  "Se nota que te esfuerzas mucho",
+  "Tienes algo que se nota diferente",
+  "Y me gusta seguir conociéndote :)",
+  "FINAL"
 ];
 
 let index=0;
@@ -131,7 +126,23 @@ function escribirTexto(texto){
 
 function siguienteMensaje(){
   if(writing)return;
-  index=(index+1)%mensajes.length;
+  index++;
+
+  // Cambio de fondo dinámico
+  if(index==1) document.body.style.background="linear-gradient(180deg,#4facfe,#1e3c72)";
+  if(index==2) document.body.style.background="linear-gradient(180deg,#1e3c72,#2a5298)";
+  if(index==3) document.body.style.background="linear-gradient(180deg,#2a5298,#4facfe)";
+  if(index==4) document.body.style.background="linear-gradient(180deg,#1e3c72,#6a11cb)";
+
+  // MENSAJE FINAL
+  if(index>=mensajes.length-1){
+    escribirTexto("ojalá te haya gustado este pequeño detalle sencillo :) me pareces increíble 💙");
+
+    // detener peluches
+    clearInterval(pelucheInterval);
+    return;
+  }
+
   escribirTexto(mensajes[index]);
 }
 
@@ -149,20 +160,20 @@ function toggleMusic(){
   }
 }
 
-/* ESTRELLAS */
-for(let i=0;i<70;i++){
+// ESTRELLAS
+for(let i=0;i<180;i++){
   const star=document.createElement('div');
   star.className='star';
   star.style.top=Math.random()*100+'%';
   star.style.left=Math.random()*100+'%';
-  document.getElementById('stars').appendChild(star);
+  document.body.appendChild(star);
 }
 
-/* PELUCHES MÁS GRANDES Y BONITOS */
+// PELUCHES (MEJORES LINKS)
 const peluches=[
-  'https://cdn-icons-png.flaticon.com/512/1998/1998610.png',
-  'https://cdn-icons-png.flaticon.com/512/3468/3468371.png',
-  'https://cdn-icons-png.flaticon.com/512/616/616408.png'
+  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
+  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
+  'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG47.png'
 ];
 
 function crearPeluche(){
@@ -170,13 +181,12 @@ function crearPeluche(){
   p.src=peluches[Math.floor(Math.random()*peluches.length)];
   p.className='peluche';
   p.style.left=Math.random()*100+'vw';
-  p.style.animationDuration=(8+Math.random()*6)+'s';
   document.body.appendChild(p);
 
   setTimeout(()=>p.remove(),14000);
 }
 
-setInterval(crearPeluche,1500);
+const pelucheInterval = setInterval(crearPeluche,1500);
 
 escribirTexto(mensajes[0]);
 
