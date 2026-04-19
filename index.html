@@ -21,6 +21,7 @@ body{
   transition:background 1.5s ease;
 }
 
+/* 🌌 GALAXIA */
 canvas{
   position:fixed;
   top:0;
@@ -28,7 +29,21 @@ canvas{
   z-index:0;
 }
 
-/* 🌙 LUNA PRO */
+/* ✨ FLASH DE LUZ */
+.flash{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,0.25), transparent 60%);
+  opacity:0;
+  transition:opacity 0.2s ease;
+  z-index:1;
+}
+
+/* 🌙 LUNA */
 .moon{
   position:absolute;
   top:15%;
@@ -161,6 +176,7 @@ canvas{
 <body>
 
 <canvas id="space"></canvas>
+<div class="flash" id="flash"></div>
 <div class="moon" id="moon"></div>
 
 <div class="card">
@@ -217,10 +233,19 @@ function draw(){
 
   requestAnimationFrame(draw);
 }
-
 draw();
 
-/* 🌠 ESTRELLAS FUGACES */
+/* ✨ ILUMINAR FONDO */
+function iluminarFondo(){
+  const flash = document.getElementById("flash");
+  flash.style.opacity = "1";
+
+  setTimeout(()=>{
+    flash.style.opacity = "0";
+  },150);
+}
+
+/* 🌠 ESTRELLA FUGAZ */
 function crearEstrellaFugaz(){
   const star = document.createElement("div");
   star.className = "shooting-star";
@@ -232,6 +257,8 @@ function crearEstrellaFugaz(){
   star.style.top = startY + "px";
 
   document.body.appendChild(star);
+
+  iluminarFondo();
 
   const distancia = 400 + Math.random()*300;
   const duracion = 800 + Math.random()*600;
