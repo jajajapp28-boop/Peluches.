@@ -19,7 +19,7 @@ body{
   transition:background 1.5s ease;
 }
 
-/* 🌌 CANVAS */
+/* 🌌 GALAXIA */
 canvas{
   position:fixed;
   top:0;
@@ -32,12 +32,12 @@ canvas{
   position:absolute;
   top:15%;
   right:10%;
-  width:90px;
-  height:90px;
-  background:white;
+  width:120px;
+  height:120px;
   border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff, #ddd);
   opacity:0;
-  box-shadow:0 0 60px white;
+  box-shadow:0 0 80px white, 0 0 140px rgba(255,255,255,0.5);
   transition:opacity 2s;
 }
 
@@ -45,35 +45,35 @@ canvas{
 .card{
   position:relative;
   z-index:2;
-  backdrop-filter:blur(12px);
+  backdrop-filter:blur(15px);
   background:rgba(255,255,255,0.15);
   border-radius:20px;
   padding:25px;
   width:90%;
-  max-width:380px;
+  max-width:400px;
   text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
 }
 
 /* ✉️ SOBRE */
 .envelope{
   margin-top:15px;
   position:relative;
-  height:140px;
-  background:#bbdefb;
-  border-radius:10px;
+  height:150px;
+  background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+  border-radius:12px;
   overflow:hidden;
   cursor:pointer;
 }
 
-/* TAPA */
 .flap{
   position:absolute;
   width:100%;
   height:100%;
-  background:#90caf9;
+  background:linear-gradient(135deg,#90caf9,#42a5f5);
   clip-path:polygon(0 0,100% 0,50% 60%);
   transform-origin:top;
-  transition:0.7s;
+  transition:0.8s cubic-bezier(.4,2,.6,1);
   z-index:2;
 }
 
@@ -81,28 +81,30 @@ canvas{
   transform:rotateX(120deg);
 }
 
-/* CARTA */
 .letter{
   position:absolute;
   bottom:0;
   width:100%;
   height:100%;
-  background:white;
+  background:
+    linear-gradient(#fff,#f1f1f1),
+    repeating-linear-gradient(transparent,transparent 22px,rgba(0,0,0,0.05) 23px);
   color:#333;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
+  padding:15px;
   transform:translateY(100%);
   transition:0.6s;
 }
 
 .envelope.open .letter{
-  transform:translateY(0);
+  transform:translateY(-10px);
 }
 
-/* TEXTO */
+/* ✍️ TEXTO */
 #mensaje{
+  font-size:1.2em;
   opacity:0;
   transition:0.5s;
 }
@@ -124,13 +126,26 @@ canvas{
   height:6px;
   border-radius:50%;
   background:white;
-  opacity:0.8;
   pointer-events:none;
   animation:fade 0.6s forwards;
 }
 
 @keyframes fade{
   to{transform:scale(3);opacity:0}
+}
+
+/* 🧸 PELUCHES */
+.peluche{
+  position:absolute;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+  animation:float linear infinite;
+}
+
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0.8);opacity:0}
+  10%{opacity:1}
+  50%{transform:translateY(40vh) scale(1)}
+  100%{transform:translateY(-10vh) scale(1.1);opacity:0}
 }
 
 </style>
@@ -158,32 +173,59 @@ canvas{
 
 <script>
 
-/* 🌌 GALAXIA */
-const c=document.getElementById("space");
-const ctx=c.getContext("2d");
-c.width=innerWidth;
-c.height=innerHeight;
+/* 🌌 GALAXIA REAL */
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
 
-let stars=[];
-for(let i=0;i<100;i++){
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let stars = [];
+
+for(let i=0;i<140;i++){
   stars.push({
-    x:Math.random()*c.width,
-    y:Math.random()*c.height,
-    r:Math.random()*1.5
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2,
+    s:Math.random()*0.4
   });
 }
 
 function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  stars.forEach(s=>{
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  stars.forEach(star=>{
     ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle="white";
+    ctx.arc(star.x,star.y,star.r,0,Math.PI*2);
+    ctx.fillStyle="rgba(255,255,255,0.8)";
     ctx.fill();
+
+    star.y -= star.s;
+
+    if(star.y < 0){
+      star.y = canvas.height;
+      star.x = Math.random()*canvas.width;
+    }
   });
+
   requestAnimationFrame(draw);
 }
+
 draw();
+
+/* ✍️ ESCRITURA REAL */
+function escribir(texto){
+  let i=0;
+  mensaje.innerHTML="";
+  const inter=setInterval(()=>{
+    mensaje.innerHTML+=texto[i];
+    i++;
+
+    if(texto[i]==" ") i++;
+
+    if(i>=texto.length) clearInterval(inter);
+  },45);
+}
 
 /* MENSAJES */
 const mensajes=[
@@ -197,29 +239,18 @@ const mensajes=[
 
 let index=0;
 
-/* TEXTO */
-function escribir(t){
-  let i=0;
-  mensaje.innerHTML="";
-  const int=setInterval(()=>{
-    mensaje.innerHTML+=t[i];
-    i++;
-    if(i>=t.length) clearInterval(int);
-  },35);
-}
-
-/* CAMBIO DE FONDO */
+/* 🌈 FONDOS */
 function fondo(){
   if(index==1) document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
   if(index==2) document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
-  if(index==3) document.body.style.background="linear-gradient(#1e3c72,#2c3e50)";
+  if(index==3) document.body.style.background="linear-gradient(#1e3c72,#3a6186)";
   if(index==4){
-    document.body.style.background="linear-gradient(#2c3e50,#000)";
+    document.body.style.background="linear-gradient(#3a6186,#000)";
     moon.style.opacity=1;
   }
 }
 
-/* CARTA */
+/* ✉️ CARTA */
 function abrir(t){
   envelope.classList.remove("open");
   mensaje.style.opacity=0;
@@ -243,12 +274,25 @@ envelope.onclick=()=>{
   abrir(mensajes[index]);
 };
 
-/* MUSICA */
-function toggleMusic(){
-  music.paused?music.play():music.pause();
-}
+/* 🧸 PELUCHES */
+const peluches=[
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG47.png'
+];
 
-/* CURSOR */
+setInterval(()=>{
+  const p=document.createElement("img");
+  p.src=peluches[Math.floor(Math.random()*peluches.length)];
+  p.className="peluche";
+  p.style.left=Math.random()*100+"vw";
+  p.style.width=(130+Math.random()*70)+"px";
+  p.style.animationDuration=(10+Math.random()*6)+"s";
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),14000);
+},2000);
+
+/* ✨ CURSOR */
 document.addEventListener("mousemove",e=>{
   const g=document.createElement("div");
   g.className="cursor-glow";
@@ -257,6 +301,11 @@ document.addEventListener("mousemove",e=>{
   document.body.appendChild(g);
   setTimeout(()=>g.remove(),600);
 });
+
+/* 🎵 */
+function toggleMusic(){
+  music.paused?music.play():music.pause();
+}
 
 /* INICIO */
 abrir(mensajes[0]);
