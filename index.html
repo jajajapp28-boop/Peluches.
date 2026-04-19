@@ -21,7 +21,6 @@ body{
   transition:background 1.5s ease;
 }
 
-/* 🌌 GALAXIA */
 canvas{
   position:fixed;
   top:0;
@@ -29,21 +28,6 @@ canvas{
   z-index:0;
 }
 
-/* ✨ FLASH DE LUZ */
-.flash{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  background:radial-gradient(circle, rgba(255,255,255,0.25), transparent 60%);
-  opacity:0;
-  transition:opacity 0.2s ease;
-  z-index:1;
-}
-
-/* 🌙 LUNA */
 .moon{
   position:absolute;
   top:15%;
@@ -57,7 +41,6 @@ canvas{
   transition:opacity 2s;
 }
 
-/* TARJETA */
 .card{
   position:relative;
   z-index:2;
@@ -71,7 +54,6 @@ canvas{
   box-shadow:0 15px 40px rgba(0,0,0,0.4);
 }
 
-/* SOBRE */
 .envelope{
   margin-top:15px;
   position:relative;
@@ -116,7 +98,6 @@ canvas{
   transform:translateY(-10px);
 }
 
-/* TEXTO */
 #mensaje{
   font-family:'Caveat',cursive;
   font-size:1.5em;
@@ -125,7 +106,6 @@ canvas{
   transition:0.5s;
 }
 
-/* BOTÓN */
 .btn{
   margin-top:10px;
   padding:10px;
@@ -135,7 +115,6 @@ canvas{
   color:#0077b6;
 }
 
-/* 🧸 PELUCHES */
 .peluche{
   position:absolute;
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
@@ -148,7 +127,6 @@ canvas{
   100%{transform:translateY(-10vh);opacity:0}
 }
 
-/* 🌠 ESTRELLA FUGAZ */
 .shooting-star{
   position:absolute;
   width:2px;
@@ -169,14 +147,12 @@ canvas{
   transform:rotate(45deg);
   transform-origin:left;
 }
-
 </style>
 </head>
 
 <body>
 
 <canvas id="space"></canvas>
-<div class="flash" id="flash"></div>
 <div class="moon" id="moon"></div>
 
 <div class="card">
@@ -196,7 +172,6 @@ canvas{
 
 <script>
 
-/* 🌌 GALAXIA */
 const canvas = document.getElementById("space");
 const ctx = canvas.getContext("2d");
 
@@ -215,13 +190,17 @@ for(let i=0;i<180;i++){
   });
 }
 
+let glowEffect = null;
+
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  let intensidad = index >= 4 ? 1 : 0.6;
 
   stars.forEach(s=>{
     ctx.beginPath();
     ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(255,255,255,${s.alpha})`;
+    ctx.fillStyle=`rgba(255,255,255,${s.alpha * intensidad})`;
     ctx.fill();
 
     s.y -= s.speed;
@@ -231,21 +210,20 @@ function draw(){
     }
   });
 
+  if(glowEffect){
+    const g = glowEffect;
+    const grad = ctx.createRadialGradient(g.x,g.y,0,g.x,g.y,g.r);
+    grad.addColorStop(0,"rgba(255,255,255,0.25)");
+    grad.addColorStop(1,"transparent");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
   requestAnimationFrame(draw);
 }
 draw();
 
-/* ✨ ILUMINAR FONDO */
-function iluminarFondo(){
-  const flash = document.getElementById("flash");
-  flash.style.opacity = "1";
-
-  setTimeout(()=>{
-    flash.style.opacity = "0";
-  },150);
-}
-
-/* 🌠 ESTRELLA FUGAZ */
+/* 🌠 ESTRELLA REAL */
 function crearEstrellaFugaz(){
   const star = document.createElement("div");
   star.className = "shooting-star";
@@ -258,40 +236,58 @@ function crearEstrellaFugaz(){
 
   document.body.appendChild(star);
 
-  iluminarFondo();
+  const distancia = 500 + Math.random()*300;
+  const duracion = 900 + Math.random()*600;
 
-  const distancia = 400 + Math.random()*300;
-  const duracion = 800 + Math.random()*600;
+  let startTime = null;
+
+  function animar(time){
+    if(!startTime) startTime = time;
+    const progress = (time - startTime)/duracion;
+
+    glowEffect = {
+      x: startX + distancia*progress,
+      y: startY + distancia*progress,
+      r: 120*(1-progress)
+    };
+
+    if(progress < 1){
+      requestAnimationFrame(animar);
+    }else{
+      glowEffect = null;
+    }
+  }
+
+  requestAnimationFrame(animar);
 
   star.animate([
-    { transform: 'translate(0,0)', opacity: 1 },
-    { transform: `translate(${distancia}px, ${distancia}px)`, opacity: 0 }
+    { transform:'translate(0,0)', opacity:1 },
+    { transform:`translate(${distancia}px,${distancia}px)`, opacity:0 }
   ],{
-    duration: duracion,
-    easing: 'ease-out'
+    duration:duracion,
+    easing:'ease-out'
   });
 
-  setTimeout(()=> star.remove(), duracion);
+  setTimeout(()=>star.remove(),duracion);
 }
 
 setInterval(()=>{
-  if(Math.random() > 0.6){
+  if(Math.random()>0.6){
     crearEstrellaFugaz();
   }
 },2000);
 
-/* ✍️ TEXTO */
+/* TEXTO */
 function escribir(texto){
   let i=0;
   mensaje.innerHTML="";
   const inter=setInterval(()=>{
     mensaje.innerHTML += texto.charAt(i);
     i++;
-    if(i >= texto.length) clearInterval(inter);
+    if(i>=texto.length) clearInterval(inter);
   },40);
 }
 
-/* MENSAJES */
 const mensajes=[
 "Quería hacerte algo especial 💙",
 "Eres una gran chica",
@@ -303,18 +299,21 @@ const mensajes=[
 
 let index=0;
 
-/* 🌈 FONDO */
 function fondo(){
-  if(index==1) document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
-  if(index==2) document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
-  if(index==3) document.body.style.background="linear-gradient(#1e3c72,#3a6186)";
-  if(index==4){
-    document.body.style.background="linear-gradient(#3a6186,#000)";
+  if(index==1)
+    document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
+  if(index==2)
+    document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
+  if(index==3)
+    document.body.style.background="linear-gradient(#1e3c72,#2c3e50)";
+  if(index==4)
+    document.body.style.background="linear-gradient(#2c3e50,#000)";
+  if(index>=5){
+    document.body.style.background="#000";
     moon.style.opacity=1;
   }
 }
 
-/* ✉️ CARTA */
 function abrir(t){
   envelope.classList.remove("open");
   mensaje.style.opacity=0;
@@ -338,7 +337,7 @@ envelope.onclick=()=>{
   abrir(mensajes[index]);
 };
 
-/* 🧸 PELUCHES */
+/* PELUCHES */
 const peluches=[
 'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
 'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
@@ -351,17 +350,15 @@ setInterval(()=>{
   p.className="peluche";
   p.style.left=Math.random()*100+"vw";
   p.style.width=(130+Math.random()*70)+"px";
-  p.style.animationDuration=(10+Math.random()*6)+"s";
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),14000);
 },2000);
 
-/* 🎵 */
+/* MÚSICA */
 function toggleMusic(){
   music.paused?music.play():music.pause();
 }
 
-/* INICIO */
 abrir(mensajes[0]);
 
 </script>
