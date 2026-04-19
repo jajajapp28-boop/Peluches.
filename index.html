@@ -21,10 +21,7 @@ body{
   opacity:0;
   transition:background 1.5s ease, opacity 1.5s;
 }
-
-body.loaded{
-  opacity:1;
-}
+body.loaded{opacity:1}
 
 /* 🌌 CANVAS */
 canvas{
@@ -34,25 +31,29 @@ canvas{
   z-index:0;
 }
 
-/* 🌙 LUNA REALISTA */
+/* 🌙 LUNA FINAL (CRÁTERES VISIBLES) */
 .moon{
   position:absolute;
-  top:12%;
-  right:8%;
-  width:160px;
-  height:160px;
+  top:8%;
+  right:5%;
+  width:200px;
+  height:200px;
   border-radius:50%;
   background:
-    radial-gradient(circle at 30% 30%, #fff 30%, #ddd 55%, #aaa 80%),
-    radial-gradient(circle at 65% 65%, rgba(0,0,0,0.25) 10%, transparent 12%),
-    radial-gradient(circle at 40% 75%, rgba(0,0,0,0.2) 8%, transparent 10%),
-    radial-gradient(circle at 75% 35%, rgba(0,0,0,0.18) 6%, transparent 8%);
+    radial-gradient(circle at 30% 30%, #f5f5f5 25%, #ccc 60%, #999 90%),
+    radial-gradient(circle at 65% 65%, rgba(0,0,0,0.45) 15%, transparent 17%),
+    radial-gradient(circle at 40% 75%, rgba(0,0,0,0.4) 13%, transparent 15%),
+    radial-gradient(circle at 75% 35%, rgba(0,0,0,0.35) 11%, transparent 13%),
+    radial-gradient(circle at 55% 25%, rgba(0,0,0,0.3) 9%, transparent 11%),
+    radial-gradient(circle at 30% 60%, rgba(0,0,0,0.25) 5%, transparent 7%),
+    radial-gradient(circle at 70% 55%, rgba(0,0,0,0.2) 4%, transparent 6%);
   box-shadow:
-    0 0 60px rgba(255,255,255,0.9),
-    0 0 120px rgba(255,255,255,0.4),
-    inset -10px -10px 20px rgba(0,0,0,0.2);
+    0 0 70px rgba(255,255,255,0.9),
+    0 0 140px rgba(255,255,255,0.5),
+    inset -25px -25px 50px rgba(0,0,0,0.4);
+  filter:brightness(0.95);
   opacity:0;
-  transform:scale(0.8);
+  transform:scale(0.7);
   transition:opacity 2s, transform 2s;
 }
 
@@ -60,53 +61,32 @@ canvas{
 .card{
   position:relative;
   z-index:2;
-  backdrop-filter:blur(30px);
-  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(20px);
+  background:rgba(10,20,40,0.55);
   border-radius:25px;
   padding:28px;
   width:90%;
   max-width:400px;
   text-align:center;
-  border:1px solid rgba(255,255,255,0.25);
+  border:1.5px solid rgba(255,255,255,0.4);
   box-shadow:
-    0 25px 70px rgba(0,0,0,0.7),
-    inset 0 0 25px rgba(255,255,255,0.05);
-  transform:scale(0.8);
+    0 30px 80px rgba(0,0,0,0.9),
+    0 0 30px rgba(255,255,255,0.15),
+    inset 0 0 20px rgba(255,255,255,0.05);
+  transform:scale(0.85);
   opacity:0;
-  filter:blur(10px);
   transition:all 1.2s ease;
 }
-
 body.loaded .card{
   transform:scale(1);
   opacity:1;
-  filter:blur(0);
 }
-
-/* ✨ BORDE ILUMINADO */
 .card::before{
   content:"";
   position:absolute;
   inset:0;
   border-radius:25px;
-  padding:1px;
-  background:linear-gradient(120deg, rgba(255,255,255,0.5), transparent, rgba(255,255,255,0.4));
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity:0.6;
-}
-
-/* ✨ BRILLO */
-.card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:25px;
-  background:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 60%);
-  opacity:0.4;
+  border:1.5px solid rgba(255,255,255,0.3);
 }
 
 /* 💓 LATIDO */
@@ -117,9 +97,7 @@ body.loaded .card{
   70%{transform:scale(1.02)}
   100%{transform:scale(1)}
 }
-.latido{
-  animation:latido 1.8s infinite;
-}
+.latido{animation:latido 1.8s infinite}
 
 /* ✉️ SOBRE */
 .envelope{
@@ -129,11 +107,11 @@ body.loaded .card{
   border-radius:12px;
   cursor:pointer;
   box-shadow:0 10px 25px rgba(0,0,0,0.3);
-  transition:transform 0.3s;
+  transition:0.3s;
   position:relative;
   overflow:hidden;
 }
-.envelope:hover{transform:scale(1.03)}
+.envelope:hover{transform:scale(1.05)}
 
 .flap{
   position:absolute;
@@ -162,12 +140,21 @@ body.loaded .card{
 }
 .envelope.open .letter{transform:translateY(-10px)}
 
-/* ✍️ TEXTO */
 #mensaje{
   font-family:'Caveat',cursive;
   font-size:1.7em;
-  text-shadow:0 2px 10px rgba(0,0,0,0.3);
   opacity:0;
+}
+
+/* 🎵 BOTÓN */
+.btn{
+  margin-top:15px;
+  padding:10px 15px;
+  border:none;
+  border-radius:20px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  cursor:pointer;
 }
 
 /* 🧸 PELUCHES */
@@ -197,6 +184,13 @@ body.loaded .card{
       <p id="mensaje"></p>
     </div>
   </div>
+
+  <button class="btn" onclick="toggleMusic()">🎵 Música</button>
+  <audio id="music" src="all-i-want.mp3"></audio>
+
+  <p style="margin-top:10px;font-size:0.9em;opacity:0.8;">
+    Toca el sobre ✉️
+  </p>
 </div>
 
 <script>
@@ -208,7 +202,7 @@ canvas.width=innerWidth;
 canvas.height=innerHeight;
 
 let stars=[];
-for(let i=0;i<180;i++){
+for(let i=0;i<220;i++){
   stars.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
@@ -222,17 +216,19 @@ function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   stars.forEach(s=>{
-    s.alpha+=(Math.random()-0.5)*0.08;
-    if(s.alpha<0.2)s.alpha=0.2;
+    s.alpha+=(Math.random()-0.5)*0.15;
+    if(s.alpha<0.3)s.alpha=0.3;
     if(s.alpha>1)s.alpha=1;
 
-    s.r+=(Math.random()-0.5)*0.1;
+    s.r+=(Math.random()-0.5)*0.2;
     if(s.r<0.5)s.r=0.5;
-    if(s.r>2.5)s.r=2.5;
+    if(s.r>3)s.r=3;
 
     ctx.beginPath();
     ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
     ctx.fillStyle=`rgba(255,255,255,${s.alpha})`;
+    ctx.shadowBlur=10;
+    ctx.shadowColor="white";
     ctx.fill();
 
     s.y-=s.speed;
@@ -246,16 +242,7 @@ function draw(){
 }
 draw();
 
-/* TEXTO */
-function escribir(texto){
-  let i=0;
-  mensaje.innerHTML="";
-  const inter=setInterval(()=>{
-    mensaje.innerHTML+=texto.charAt(i);
-    if(++i>=texto.length)clearInterval(inter);
-  },40);
-}
-
+/* MENSAJES */
 const mensajes=[
 "Quería hacerte algo especial 💙",
 "Eres una gran chica",
@@ -268,6 +255,15 @@ const mensajes=[
 
 let index=0;
 
+function escribir(texto){
+  let i=0;
+  mensaje.innerHTML="";
+  const inter=setInterval(()=>{
+    mensaje.innerHTML+=texto.charAt(i);
+    if(++i>=texto.length)clearInterval(inter);
+  },40);
+}
+
 function fondo(){
   if(index==4){
     document.body.style.background="linear-gradient(#3a6186,#000)";
@@ -275,19 +271,8 @@ function fondo(){
     moon.style.transform="scale(1)";
   }
   if(index==5){
-    document.body.style.background="linear-gradient(#000,#000)";
+    document.body.style.background="black";
   }
-}
-
-function abrir(t){
-  envelope.classList.remove("open");
-  mensaje.style.opacity=0;
-
-  setTimeout(()=>{
-    envelope.classList.add("open");
-    escribir(t);
-    mensaje.style.opacity=1;
-  },300);
 }
 
 envelope.onclick=()=>{
@@ -295,24 +280,35 @@ envelope.onclick=()=>{
   fondo();
 
   if(index>=mensajes.length-1){
-    abrir("ojalá te haya gustado :) me pareces increíble 💙");
+    escribir("ojalá te haya gustado :) me pareces increíble 💙");
     return;
   }
 
-  abrir(mensajes[index]);
+  escribir(mensajes[index]);
 };
 
-/* PELUCHES */
+/* 🧸 PELUCHES */
+const peluches=[
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png',
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG97.png',
+'https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG47.png'
+];
+
 setInterval(()=>{
   const p=document.createElement("img");
-  p.src='https://pngimg.com/uploads/teddy_bear/teddy_bear_PNG142.png';
+  p.src=peluches[Math.floor(Math.random()*peluches.length)];
   p.className="peluche";
   p.style.left=Math.random()*100+"vw";
   p.style.width=(130+Math.random()*70)+"px";
   p.style.animationDuration=(10+Math.random()*6)+"s";
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),14000);
-},2000);
+},1500);
+
+/* 🎵 */
+function toggleMusic(){
+  music.paused?music.play():music.pause();
+}
 
 /* INICIO */
 window.onload=()=>{
@@ -321,11 +317,12 @@ window.onload=()=>{
 
     setTimeout(()=>{
       document.querySelector(".card").classList.add("latido");
-      abrir(mensajes[0]);
-    },1200);
+      escribir(mensajes[0]);
+    },1000);
 
   },300);
 };
+
 </script>
 
 </body>
