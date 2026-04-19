@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Para ti 💙</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 
@@ -19,7 +21,6 @@ body{
   transition:background 1.5s ease;
 }
 
-/* 🌌 GALAXIA */
 canvas{
   position:fixed;
   top:0;
@@ -27,21 +28,21 @@ canvas{
   z-index:0;
 }
 
-/* 🌙 LUNA */
+/* 🌙 LUNA PRO */
 .moon{
   position:absolute;
   top:15%;
   right:10%;
-  width:120px;
-  height:120px;
+  width:140px;
+  height:140px;
   border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #fff, #ddd);
+  background:radial-gradient(circle at 30% 30%, #fff 40%, #ddd 70%, #bbb);
+  box-shadow:0 0 80px white, 0 0 150px rgba(255,255,255,0.5);
   opacity:0;
-  box-shadow:0 0 80px white, 0 0 140px rgba(255,255,255,0.5);
   transition:opacity 2s;
 }
 
-/* CARD */
+/* TARJETA */
 .card{
   position:relative;
   z-index:2;
@@ -55,7 +56,7 @@ canvas{
   box-shadow:0 15px 40px rgba(0,0,0,0.4);
 }
 
-/* ✉️ SOBRE */
+/* SOBRE */
 .envelope{
   margin-top:15px;
   position:relative;
@@ -86,9 +87,7 @@ canvas{
   bottom:0;
   width:100%;
   height:100%;
-  background:
-    linear-gradient(#fff,#f1f1f1),
-    repeating-linear-gradient(transparent,transparent 22px,rgba(0,0,0,0.05) 23px);
+  background:white;
   color:#333;
   display:flex;
   align-items:center;
@@ -102,9 +101,11 @@ canvas{
   transform:translateY(-10px);
 }
 
-/* ✍️ TEXTO */
+/* TEXTO */
 #mensaje{
-  font-size:1.2em;
+  font-family:'Caveat',cursive;
+  font-size:1.5em;
+  line-height:1.4;
   opacity:0;
   transition:0.5s;
 }
@@ -119,21 +120,6 @@ canvas{
   color:#0077b6;
 }
 
-/* ✨ CURSOR */
-.cursor-glow{
-  position:fixed;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:white;
-  pointer-events:none;
-  animation:fade 0.6s forwards;
-}
-
-@keyframes fade{
-  to{transform:scale(3);opacity:0}
-}
-
 /* 🧸 PELUCHES */
 .peluche{
   position:absolute;
@@ -142,10 +128,31 @@ canvas{
 }
 
 @keyframes float{
-  0%{transform:translateY(100vh) scale(0.8);opacity:0}
+  0%{transform:translateY(100vh);opacity:0}
   10%{opacity:1}
-  50%{transform:translateY(40vh) scale(1)}
-  100%{transform:translateY(-10vh) scale(1.1);opacity:0}
+  100%{transform:translateY(-10vh);opacity:0}
+}
+
+/* 🌠 ESTRELLA FUGAZ */
+.shooting-star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  box-shadow:0 0 10px white, 0 0 20px white;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:1;
+}
+
+.shooting-star::after{
+  content:'';
+  position:absolute;
+  width:120px;
+  height:2px;
+  background:linear-gradient(to right, white, transparent);
+  transform:rotate(45deg);
+  transform-origin:left;
 }
 
 </style>
@@ -173,7 +180,7 @@ canvas{
 
 <script>
 
-/* 🌌 GALAXIA REAL */
+/* 🌌 GALAXIA */
 const canvas = document.getElementById("space");
 const ctx = canvas.getContext("2d");
 
@@ -182,29 +189,29 @@ canvas.height = innerHeight;
 
 let stars = [];
 
-for(let i=0;i<140;i++){
+for(let i=0;i<180;i++){
   stars.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
     r:Math.random()*2,
-    s:Math.random()*0.4
+    speed:Math.random()*0.3,
+    alpha:Math.random()
   });
 }
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  stars.forEach(star=>{
+  stars.forEach(s=>{
     ctx.beginPath();
-    ctx.arc(star.x,star.y,star.r,0,Math.PI*2);
-    ctx.fillStyle="rgba(255,255,255,0.8)";
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${s.alpha})`;
     ctx.fill();
 
-    star.y -= star.s;
-
-    if(star.y < 0){
-      star.y = canvas.height;
-      star.x = Math.random()*canvas.width;
+    s.y -= s.speed;
+    if(s.y < 0){
+      s.y = canvas.height;
+      s.x = Math.random()*canvas.width;
     }
   });
 
@@ -213,18 +220,48 @@ function draw(){
 
 draw();
 
-/* ✍️ ESCRITURA REAL */
+/* 🌠 ESTRELLAS FUGACES */
+function crearEstrellaFugaz(){
+  const star = document.createElement("div");
+  star.className = "shooting-star";
+
+  const startX = Math.random() * window.innerWidth;
+  const startY = Math.random() * window.innerHeight * 0.3;
+
+  star.style.left = startX + "px";
+  star.style.top = startY + "px";
+
+  document.body.appendChild(star);
+
+  const distancia = 400 + Math.random()*300;
+  const duracion = 800 + Math.random()*600;
+
+  star.animate([
+    { transform: 'translate(0,0)', opacity: 1 },
+    { transform: `translate(${distancia}px, ${distancia}px)`, opacity: 0 }
+  ],{
+    duration: duracion,
+    easing: 'ease-out'
+  });
+
+  setTimeout(()=> star.remove(), duracion);
+}
+
+setInterval(()=>{
+  if(Math.random() > 0.6){
+    crearEstrellaFugaz();
+  }
+},2000);
+
+/* ✍️ TEXTO */
 function escribir(texto){
   let i=0;
   mensaje.innerHTML="";
   const inter=setInterval(()=>{
-    mensaje.innerHTML+=texto[i];
+    mensaje.innerHTML += texto.charAt(i);
     i++;
-
-    if(texto[i]==" ") i++;
-
-    if(i>=texto.length) clearInterval(inter);
-  },45);
+    if(i >= texto.length) clearInterval(inter);
+  },40);
 }
 
 /* MENSAJES */
@@ -239,7 +276,7 @@ const mensajes=[
 
 let index=0;
 
-/* 🌈 FONDOS */
+/* 🌈 FONDO */
 function fondo(){
   if(index==1) document.body.style.background="linear-gradient(#6ec6ff,#4facfe)";
   if(index==2) document.body.style.background="linear-gradient(#4facfe,#1e3c72)";
@@ -291,16 +328,6 @@ setInterval(()=>{
   document.body.appendChild(p);
   setTimeout(()=>p.remove(),14000);
 },2000);
-
-/* ✨ CURSOR */
-document.addEventListener("mousemove",e=>{
-  const g=document.createElement("div");
-  g.className="cursor-glow";
-  g.style.left=e.clientX+"px";
-  g.style.top=e.clientY+"px";
-  document.body.appendChild(g);
-  setTimeout(()=>g.remove(),600);
-});
 
 /* 🎵 */
 function toggleMusic(){
