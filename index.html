@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Para ti 💙</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #4facfe, #1e3c72 60%, #0a1f44);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .card {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      animation: fadeIn 1.5s ease;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    #mensaje {
+      font-size: 1.1em;
+      opacity: 0.9;
+      min-height: 50px;
+    }
+
+    .btn {
+      margin-top: 15px;
+      padding: 12px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6ec6ff, #b3e5fc);
+      color: #003366;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.08);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+    }
+
+    .peluche {
+      position: absolute;
+      width: 50px;
+      pointer-events: none;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.1) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Hola :)</h1>
+    <p id="mensaje"></p>
+
+    <button class="btn" id="musicBtn" onclick="toggleMusic()">🎵 Reproducir</button>
+    <button class="btn secondary" onclick="siguienteMensaje()">Siguiente</button>
+  </div>
+
+  <!-- 🔥 AQUÍ VA TU CANCIÓN -->
+  <audio id="music" src="all-i-want.mp3"></audio>
+
+  <script>
+    const mensajes = [
+      "Quería hacer algo diferente para ti 💙",
+      "Me gusta platicar contigo",
+      "Se siente buena vibra cuando hablamos",
+      "Así que hice esto, algo sencillo pero con intención :)"
+    ];
+
+    let index = 0;
+    let writing = false;
+
+    function escribirTexto(texto) {
+      const el = document.getElementById('mensaje');
+      el.innerHTML = "";
+      let i = 0;
+      writing = true;
+
+      const intervalo = setInterval(() => {
+        el.innerHTML += texto[i];
+        i++;
+        if (i >= texto.length) {
+          clearInterval(intervalo);
+          writing = false;
+        }
+      }, 35);
+    }
+
+    function siguienteMensaje() {
+      if (writing) return;
+      index = (index + 1) % mensajes.length;
+      escribirTexto(mensajes[index]);
+    }
+
+    // 🎵 CONTROL DE MÚSICA PRO
+    function toggleMusic() {
+      const audio = document.getElementById('music');
+      const btn = document.getElementById('musicBtn');
+
+      if (audio.paused) {
+        audio.play();
+        btn.textContent = "⏸️ Pausar";
+      } else {
+        audio.pause();
+        btn.textContent = "🎵 Reproducir";
+      }
+    }
+
+    // Peluches
+    const pelucheImages = [
+      'https://cdn-icons-png.flaticon.com/512/616/616408.png',
+      'https://cdn-icons-png.flaticon.com/512/616/616430.png',
+      'https://cdn-icons-png.flaticon.com/512/616/616554.png'
+    ];
+
+    function crearPeluche() {
+      const peluche = document.createElement('img');
+      peluche.src = pelucheImages[Math.floor(Math.random() * pelucheImages.length)];
+      peluche.className = 'peluche';
+      peluche.style.left = Math.random() * 100 + 'vw';
+      peluche.style.animationDuration = (6 + Math.random() * 8) + 's';
+      document.body.appendChild(peluche);
+
+      setTimeout(() => peluche.remove(), 14000);
+    }
+
+    setInterval(crearPeluche, 900);
+
+    // Inicio
+    escribirTexto(mensajes[0]);
+  </script>
+
+</body>
+</html>
